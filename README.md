@@ -116,7 +116,12 @@ git checkout checkpoint/U5   # 恢复到 U5 开始状态
 
 ## 数据说明
 
-数据为合成的 CER 风格半小时粒度电表数据，**不含真实用户信息**。
+数据基线来自 **London Smart Meter Dataset**（Kaggle: jeanmidev/smart-meters-in-london，block_0.csv）
+的真实半小时粒度用电曲线，在此基础上注入已知异常，**不含可识别用户信息**。
+
+> 若本地无 `data/london_raw/block_0.csv`，`generate_data.py` 自动降级为合成数据（CI 模式）。  
+> 本地运行演示请先[从 Kaggle 下载](https://www.kaggle.com/datasets/jeanmidev/smart-meters-in-london) block_0.csv，
+> 解压后放至 `data/london_raw/block_0.csv`。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|

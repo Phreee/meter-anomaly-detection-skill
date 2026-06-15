@@ -17,7 +17,7 @@
 ## 前置条件
 
 - 已完成 U5，`src/features.py` 实现完毕
-- `data/meters_diagnosis_100.csv` 文件存在（约 48,000 行）
+- `data/meters_diagnosis_50.csv` 文件存在（约 23,000 行，~48 台 × 10 天）
 
 ---
 
@@ -58,7 +58,7 @@ git checkout checkpoint/U6
 在 Claude Code 中输入：
 
 ```
-请分析 data/meters_diagnosis_100.csv 的数据质量，报告：
+请分析 data/meters_diagnosis_50.csv 的数据质量，报告：
 1. 完全重复行数（meter_id + timestamp + kwh 完全相同）
 2. 冲突时戳数（meter_id + timestamp 相同但 kwh 不同）
 3. 缺失的 30 分钟时段总数

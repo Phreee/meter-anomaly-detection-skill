@@ -9,6 +9,8 @@ import pytest
 import pandas as pd
 from pathlib import Path
 
+from src.analyze import run_pipeline, build_features
+
 # Imports will fail until Phase 3b src/ modules are implemented — expected (RED).
 from src.cleaner import (
     load_meter_data,
@@ -156,3 +158,21 @@ def test_pipeline_runs_within_30_seconds(sample_10_df):
     _run_pipeline(sample_10_df)
     elapsed = time.time() - start
     assert elapsed < 30, f"Pipeline took {elapsed:.1f}s (limit: 30s)"
+
+
+# ---------------------------------------------------------------------------
+# TC-I06: run_pipeline (analyze.py) end-to-end via CSV filepath
+# ---------------------------------------------------------------------------
+
+def test_run_pipeline_via_filepath():
+    """TC-I06: run_pipeline() accepts a filepath, returns non-empty alert report."""
+    csv_path = Path(__file__).parent.parent / "data" / "meters_sample_10.csv"
+    if not csv_path.exists():
+        pytest.skip("Data file not found: run data/generate_data.py first")
+    report = run_pipeline(str(csv_path), verbose=False)
+    assert isinstance(report, pd.DataFrame)
+    assert len(report) > 0, "Expected at least one alert from meters_sample_10.csv"
+    detected = set(report["meter_id"].tolist())
+    assert {"EM-003", "EM-005", "EM-007", "EM-008"}.issubset(detected), (
+        f"Missing anomaly devices in report: {detected}"
+    )

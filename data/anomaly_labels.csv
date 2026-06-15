@@ -1,6 +1,6 @@
-meter_id,anomaly_type,anomaly_type_cn,meter_status,description
-EM-003,overdue_shutoff,欠费断电,overdue,第8-15天连续零用量，cumulative_kwh冻结；第16天起恢复正常用电模式（欠费补缴后复电）
-EM-005,metering_fault,计量故障,normal,第5-12天连续零用量，cumulative_kwh冻结；恢复后cumulative_kwh跳变至较低值（表计更换）
-EM-007,electricity_theft,窃电行为,normal,全时段峰谷倒置：00:00-06:00高用电(0.4-0.65kWh)，09:00-17:00低用电(0.03-0.10kWh)
-EM-008,single_day_spike,单日跳变,normal,第6天用量突增约80倍，其余天正常
-EM-010,data_quality,数据质量问题,normal,第3天slot10完全重复×1；第5天slot20相同时戳不同用量×1；第7天缺失6个半小时时段
+meter_id,anomaly_type,anomaly_type_cn,description
+EM-003,overdue_shutoff,欠费断电,第8-15天连续零用量，cumulative_kwh冻结；第16天起恢复（欠费补缴后复电）
+EM-005,metering_fault,计量故障,第5-12天连续零用量，cumulative_kwh冻结；恢复后跳变至较低值（表计更换）
+EM-007,electricity_theft,窃电行为,全时段峰谷倒置：夜间(00-06)高用电，白天(09-17)低用电
+EM-008,single_day_spike,单日跳变,第6天用量突增约80倍，其余天正常
+EM-010,data_quality,数据质量问题,第3天slot10完全重复×2；第5天slot20相同时戳不同用量×1；第7天缺失6个半小时时段

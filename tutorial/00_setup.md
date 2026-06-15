@@ -42,14 +42,20 @@ pip install -r requirements.txt
 python data/generate_data.py
 ```
 
-**预期输出**：
+**预期输出**（本地 London 模式）：
 
 ```
-生成 meters_sample_10.csv ... 14396 行
-生成 meters_diagnosis_100.csv ... 47996 行
-生成 anomaly_labels.csv ... 5 行
-所有断言通过，数据生成完毕。
+[London] 读取 data/london_raw/block_0.csv ...
+[London] sample_10: 10 台 × 30 天 = 14,396 行
+[London] diagnosis_50: 48 台 × 10 天 = 23,034 行
+[OK] meters_sample_10.csv
+[OK] meters_diagnosis_50.csv
+[OK] anomaly_labels.csv
+[MODE] London 真实数据
+[VALIDATE] 全部断言通过。
 ```
+
+> 若无 `data/london_raw/block_0.csv`，自动降级为合成数据（CI 模式），输出格式略有不同。
 
 **验收检查**：`data/` 目录下出现三个 CSV 文件。
 

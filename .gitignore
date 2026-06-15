@@ -23,7 +23,13 @@ coverage.xml
 
 # Generated data files (reproduced by generate_data.py)
 data/meters_sample_10.csv
+data/meters_diagnosis_50.csv
 data/meters_diagnosis_100.csv
+
+# London Smart Meter raw data (download separately from Kaggle)
+data/london_raw/
+data/block_0.csv.zip
+data/download_london.py
 
 # Keep the labels key in git
 !data/anomaly_labels.csv
