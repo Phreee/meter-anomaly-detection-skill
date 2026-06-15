@@ -5,6 +5,7 @@ All tests skip if data/meters_sample_10.csv is absent (run generate_data.py firs
 Test IDs follow TEST_PLAN.md: TC-I01 through TC-I05.
 """
 import time
+import numpy as np
 import pytest
 import pandas as pd
 from pathlib import Path
@@ -161,18 +162,47 @@ def test_pipeline_runs_within_30_seconds(sample_10_df):
 
 
 # ---------------------------------------------------------------------------
-# TC-I06: run_pipeline (analyze.py) end-to-end via CSV filepath
+# TC-I06: run_pipeline (analyze.py) end-to-end — self-contained, no disk deps
 # ---------------------------------------------------------------------------
 
-def test_run_pipeline_via_filepath():
-    """TC-I06: run_pipeline() accepts a filepath, returns non-empty alert report."""
-    csv_path = Path(__file__).parent.parent / "data" / "meters_sample_10.csv"
-    if not csv_path.exists():
-        pytest.skip("Data file not found: run data/generate_data.py first")
+def test_run_pipeline_via_filepath(tmp_path):
+    """TC-I06: run_pipeline() accepts a filepath and returns a valid alert report.
+
+    Builds a minimal 2-meter CSV in tmp_path (no generate_data.py dependency)
+    so this test always runs on CI even without a pre-generated data file.
+    """
+    rng = np.random.default_rng(42)
+    ts = pd.date_range("2026-05-01", periods=10 * 48, freq="30min")
+    slot = ts.hour * 2 + ts.minute // 30
+
+    # EM-001: normal meter — day-high / night-low
+    kwh_n = np.where((slot >= 18) & (slot <= 33), 0.35,
+                     np.where(slot <= 11, 0.04, 0.15))
+    kwh_n = (kwh_n + rng.normal(0, 0.01, len(ts))).clip(0)
+    df_normal = pd.DataFrame({
+        "meter_id": "EM-001",
+        "timestamp": ts.strftime("%Y-%m-%d %H:%M"),
+        "kwh": np.round(kwh_n, 3),
+        "cumulative_kwh": np.round(np.cumsum(kwh_n) + 1000.0, 3),
+    })
+
+    # EM-007: theft — night >> day (PVR > 1.5 → triggers R3)
+    kwh_t = np.where(slot <= 11, 0.50,
+                     np.where((slot >= 18) & (slot <= 33), 0.05, 0.20))
+    kwh_t = (kwh_t + rng.normal(0, 0.005, len(ts))).clip(0)
+    df_theft = pd.DataFrame({
+        "meter_id": "EM-007",
+        "timestamp": ts.strftime("%Y-%m-%d %H:%M"),
+        "kwh": np.round(kwh_t, 3),
+        "cumulative_kwh": np.round(np.cumsum(kwh_t) + 1000.0, 3),
+    })
+
+    df = pd.concat([df_normal, df_theft], ignore_index=True)
+    csv_path = tmp_path / "mini_test.csv"
+    df.to_csv(csv_path, index=False)
+
     report = run_pipeline(str(csv_path), verbose=False)
     assert isinstance(report, pd.DataFrame)
-    assert len(report) > 0, "Expected at least one alert from meters_sample_10.csv"
-    detected = set(report["meter_id"].tolist())
-    assert {"EM-003", "EM-005", "EM-007", "EM-008"}.issubset(detected), (
-        f"Missing anomaly devices in report: {detected}"
+    assert "EM-007" in set(report["meter_id"].tolist()), (
+        "R3 peak-valley theft should be detected"
     )
