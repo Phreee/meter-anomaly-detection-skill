@@ -30,8 +30,8 @@ cd meter-anomaly-detection-skill
 # 2. 安装依赖（Python 3.11+）
 pip install -r requirements.txt
 
-# 3. 生成数据
-python data/generate_data.py
+# 3. 验证数据就绪（数据集已内置，无需生成）
+python -c "import pandas as pd; print(pd.read_csv('data/meters_sample_10.csv')['meter_id'].nunique(), '台就绪')"
 
 # 4. 运行测试（应全部通过）
 pytest tests/ -q
@@ -119,9 +119,8 @@ git checkout checkpoint/U5   # 恢复到 U5 开始状态
 数据基线来自 **London Smart Meter Dataset**（Kaggle: jeanmidev/smart-meters-in-london，block_0.csv）
 的真实半小时粒度用电曲线，在此基础上注入已知异常，**不含可识别用户信息**。
 
-> 若本地无 `data/london_raw/block_0.csv`，`generate_data.py` 自动降级为合成数据（CI 模式）。  
-> 本地运行演示请先[从 Kaggle 下载](https://www.kaggle.com/datasets/jeanmidev/smart-meters-in-london) block_0.csv，
-> 解压后放至 `data/london_raw/block_0.csv`。
+> `meters_sample_10.csv` / `meters_diagnosis_*.csv` 已基于 London 真实用电曲线预生成并提交至仓库，克隆后即可直接使用，**无需 Kaggle 账号或网络下载**。  
+> 如需复现数据生成过程，可从 [Kaggle](https://www.kaggle.com/datasets/jeanmidev/smart-meters-in-london) 下载 block_0.csv，解压后放至 `data/london_raw/block_0.csv`，再运行 `python data/generate_data.py`。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|

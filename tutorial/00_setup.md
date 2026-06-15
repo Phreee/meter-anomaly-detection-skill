@@ -167,8 +167,10 @@ A：先升级 pip：`pip install --upgrade pip`，然后重试。
 **Q：`claude` 命令找不到？**  
 A：安装 CLI：`npm install -g @anthropic-ai/claude-code`
 
-**Q：数据生成报 AssertionError？**  
-A：删除已有 CSV 文件重新生成：`python data/generate_data.py`
+**Q：数据文件缺失或读取报错？**  
+A：数据集已预置于标准答案仓库，重新从 reference 复制即可：  
+`cp ../reference/meter-anomaly-detection-skill/data/meters_sample_10.csv data/`（macOS/Linux）  
+`copy ..\reference\meter-anomaly-detection-skill\data\meters_sample_10.csv data\`（Windows）
 
 **Q：不在 `workshop/my-skill/` 目录中怎么办？**  
 A：保底步骤中的相对路径 `../reference/` 需改为你实际放置标准答案的绝对路径。
