@@ -21,18 +21,14 @@ ENV/
 htmlcov/
 coverage.xml
 
-# Generated data files (reproduced by generate_data.py)
-data/meters_sample_10.csv
-data/meters_diagnosis_50.csv
-data/meters_diagnosis_100.csv
-
-# London Smart Meter raw data (download separately from Kaggle)
+# London Smart Meter raw data (55MB, too large for git — raw source only)
 data/london_raw/
 data/block_0.csv.zip
 data/download_london.py
 
-# Keep the labels key in git
-!data/anomaly_labels.csv
+# NOTE: meters_sample_10.csv / meters_diagnosis_*.csv are committed to git.
+# They were generated from the real London Smart Meter dataset.
+# Do NOT replace them with synthetic data.
 
 # IDE
 .idea/

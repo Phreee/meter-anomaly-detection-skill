@@ -184,3 +184,27 @@ pytest tests/test_features.py -v
 - NaN（缺失）与 0（无用电）的语义区别将在 U6 深入处理
 
 **下一步** → U6：诊断数据质量问题，实现 `cleaner.py` 清洗模块。
+
+---
+
+## 保底步骤（本单元未完成时执行）
+
+U5 需要复制 `features.py` 和 `src/__init__.py`。在 `workshop/my-skill/` 目录下执行：
+
+```bash
+# macOS / Linux
+cp ../reference/meter-anomaly-detection-skill/src/__init__.py src/__init__.py
+cp ../reference/meter-anomaly-detection-skill/src/features.py src/features.py
+
+# Windows（Command Prompt）
+copy ..\reference\meter-anomaly-detection-skill\src\__init__.py src\__init__.py
+copy ..\reference\meter-anomaly-detection-skill\src\features.py src\features.py
+```
+
+复制后验证：
+
+```bash
+python -c "from src.features import compute_peak_valley_ratio; print('OK')"
+```
+
+确认 `OK` 输出，即可进入 U6。

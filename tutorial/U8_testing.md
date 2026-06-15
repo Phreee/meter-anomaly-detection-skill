@@ -226,3 +226,39 @@ print(report[['meter_id', 'anomaly_type_cn', 'confidence']].to_string(index=Fals
 | U8 | `tests/`（34 个测试，覆盖率 92%）+ `ci.yml`——CI 绿灯 |
 
 **Form C 架构完整落地**：Skill 层（领域知识）+ 执行层（Python 模块）+ 验证层（测试 + CI）。
+
+---
+
+## 保底步骤（本单元未完成时执行）
+
+U8 需要复制完整测试套件和 CI 配置。在 `workshop/my-skill/` 目录下执行：
+
+```bash
+# macOS / Linux
+cp ../reference/meter-anomaly-detection-skill/tests/conftest.py tests/conftest.py
+cp ../reference/meter-anomaly-detection-skill/tests/test_cleaner.py tests/test_cleaner.py
+cp ../reference/meter-anomaly-detection-skill/tests/test_features.py tests/test_features.py
+cp ../reference/meter-anomaly-detection-skill/tests/test_detection.py tests/test_detection.py
+cp ../reference/meter-anomaly-detection-skill/tests/test_integration.py tests/test_integration.py
+cp ../reference/meter-anomaly-detection-skill/setup.cfg setup.cfg
+mkdir -p .github/workflows
+cp ../reference/meter-anomaly-detection-skill/.github/workflows/ci.yml .github/workflows/ci.yml
+
+# Windows（Command Prompt）
+copy ..\reference\meter-anomaly-detection-skill\tests\conftest.py tests\conftest.py
+copy ..\reference\meter-anomaly-detection-skill\tests\test_cleaner.py tests\test_cleaner.py
+copy ..\reference\meter-anomaly-detection-skill\tests\test_features.py tests\test_features.py
+copy ..\reference\meter-anomaly-detection-skill\tests\test_detection.py tests\test_detection.py
+copy ..\reference\meter-anomaly-detection-skill\tests\test_integration.py tests\test_integration.py
+copy ..\reference\meter-anomaly-detection-skill\setup.cfg setup.cfg
+mkdir .github\workflows
+copy ..\reference\meter-anomaly-detection-skill\.github\workflows\ci.yml .github\workflows\ci.yml
+```
+
+复制后验证本地测试全通：
+
+```bash
+python -m pytest tests/ -q
+```
+
+预期：`31 passed`。然后推送到自己的 GitHub 仓库，查看 Actions 是否绿灯。

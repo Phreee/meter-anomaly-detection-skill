@@ -197,3 +197,29 @@ pytest tests/test_cleaner.py -v
 - 规则引擎适合有明确阈值的异常；ML 补充统计偏离
 
 **下一步** → U7：用 Claude Code 四维度审查代码质量。
+
+---
+
+## 保底步骤（本单元未完成时执行）
+
+U6 需要复制 `cleaner.py`、`detector.py` 和 `analyze.py`。在 `workshop/my-skill/` 目录下执行：
+
+```bash
+# macOS / Linux
+cp ../reference/meter-anomaly-detection-skill/src/cleaner.py src/cleaner.py
+cp ../reference/meter-anomaly-detection-skill/src/detector.py src/detector.py
+cp ../reference/meter-anomaly-detection-skill/src/analyze.py src/analyze.py
+
+# Windows（Command Prompt）
+copy ..\reference\meter-anomaly-detection-skill\src\cleaner.py src\cleaner.py
+copy ..\reference\meter-anomaly-detection-skill\src\detector.py src\detector.py
+copy ..\reference\meter-anomaly-detection-skill\src\analyze.py src\analyze.py
+```
+
+复制后验证管道可跑通：
+
+```bash
+python -m src.analyze data/meters_sample_10.csv
+```
+
+确认输出包含 EM-003、EM-007、EM-008 的告警，即可进入 U7。

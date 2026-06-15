@@ -140,3 +140,23 @@ cat templates/skill-template.md
 - Skill 与 src/ 的分工是 Form C 架构的核心设计原则
 
 **下一步** → U4：创建 Skill 文件，用真实数据现场验证。
+
+---
+
+## 保底步骤（本单元未完成时执行）
+
+U3 的产出是对话文本，无需复制文件。在 AI IDE 中输入以下提示词生成模块计划：
+
+```
+请为智能电表用电异常检测系统生成项目计划（plan.md），包含：
+- 三个核心模块：cleaner.py（数据清洗）、features.py（特征提取）、detector.py（异常检测）
+- 模块依赖顺序：cleaner → features → detector
+- 数据格式契约：
+  - 原始输入：meter_id(str), timestamp(datetime), kwh(float), cumulative_kwh(float)
+  - 清洗输出：同上，kwh 可含 NaN
+  - 特征输出：meter_id, pvr, max_zero_days, spike_ratio, cv（每台设备一行）
+  - 检测输出：meter_id, anomaly_type, evidence, confidence（每条告警一行）
+请将计划写入 plan.md 文件。
+```
+
+将生成的 `plan.md` 保存到工作目录根目录，即可进入 U4。

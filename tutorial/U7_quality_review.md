@@ -169,3 +169,18 @@ with warnings.catch_warnings(record=True) as w:
 - 边界条件（单设备 / 空 DataFrame / 全零）是生产质量的最低门槛
 
 **下一步** → U8：生成四类边界测试，完成测试套件，CI 绿灯。
+
+---
+
+## 保底步骤（本单元未完成时执行）
+
+U7 的产出是 `quality_report.md`，是你自己对代码的审查报告，无标准答案可复制。  
+若时间不足，在 AI IDE 中输入以下提示词快速生成报告后继续：
+
+```
+请审查 src/cleaner.py、src/features.py、src/detector.py，
+从四个维度（可维护性、可靠性、安全性、性能）各列出 1-2 个发现，
+标注严重等级（CRITICAL/HIGH/MEDIUM/LOW），生成 quality_report.md。
+```
+
+将生成的 `quality_report.md` 保存到工作目录根目录，即可进入 U8。

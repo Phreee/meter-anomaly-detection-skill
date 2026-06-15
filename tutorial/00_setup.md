@@ -1,7 +1,23 @@
-# 环境配置与恢复检查点说明
+# 环境配置与工作坊目录结构
 
 > **适用对象**：所有参与工作坊的学员  
 > **完成时间**：课前或工作坊开场 15 分钟内
+
+---
+
+## 工作坊双目录结构
+
+本工作坊采用**标准答案 + 学员工作目录**的双目录结构：
+
+```
+workshop/
+├── reference/
+│   └── meter-anomaly-detection-skill/   ← 标准答案（只读，课程参考）
+└── my-skill/                             ← 学员工作目录（从零构建）
+```
+
+- **reference/**：克隆自 GitHub 的完整参考实现。每章结束后，未完成的学员可从此处复制对应文件，保证下一章不掉队。
+- **my-skill/**：学员自己新建的目录，工作坊全程在此构建 Skill。
 
 ---
 
@@ -10,111 +26,135 @@
 | 软件 | 最低版本 | 安装验证命令 |
 |------|---------|------------|
 | Python | 3.10+ | `python --version` |
-| Claude Code CLI | 最新版 | `claude --version` |
 | Git | 2.30+ | `git --version` |
-
-**Claude Code 需要 Sonnet 4.6 或更高版本模型。**
+| AI 编程 IDE | 最新版 | Claude Code：`claude --version` |
 
 ---
 
-## Step 1：克隆仓库
+## Step 1：克隆标准答案仓库
 
 ```bash
-git clone https://github.com/<讲师账号>/meter-anomaly-skill.git
-cd meter-anomaly-skill
+mkdir workshop && cd workshop
+mkdir reference && cd reference
+git clone https://github.com/Phreee/meter-anomaly-detection-skill.git
+cd ..
 ```
+
+克隆完成后 `reference/meter-anomaly-detection-skill/` 即为标准答案，**课程期间只读，不要在此目录操作**。
 
 ---
 
-## Step 2：安装 Python 依赖
+## Step 2：创建学员工作目录
+
+```bash
+mkdir my-skill && cd my-skill
+```
+
+在此目录初始化项目结构：
+
+```bash
+mkdir -p src tests .claude/skills .github/workflows data
+```
+
+从标准答案复制必要的起始文件（依赖清单 + **London 真实数据集** + Skill 空白模板）：
+
+```bash
+# macOS / Linux
+cp ../reference/meter-anomaly-detection-skill/requirements.txt .
+cp ../reference/meter-anomaly-detection-skill/data/anomaly_labels.csv data/
+cp ../reference/meter-anomaly-detection-skill/data/meters_sample_10.csv data/
+cp ../reference/meter-anomaly-detection-skill/data/meters_diagnosis_50.csv data/
+cp ../reference/meter-anomaly-detection-skill/data/meters_diagnosis_100.csv data/
+cp -r ../reference/meter-anomaly-detection-skill/templates .
+cp -r ../reference/meter-anomaly-detection-skill/tutorial .
+
+# Windows（Command Prompt）
+copy ..\reference\meter-anomaly-detection-skill\requirements.txt .
+copy ..\reference\meter-anomaly-detection-skill\data\anomaly_labels.csv data\
+copy ..\reference\meter-anomaly-detection-skill\data\meters_sample_10.csv data\
+copy ..\reference\meter-anomaly-detection-skill\data\meters_diagnosis_50.csv data\
+copy ..\reference\meter-anomaly-detection-skill\data\meters_diagnosis_100.csv data\
+xcopy /E /I ..\reference\meter-anomaly-detection-skill\templates templates
+xcopy /E /I ..\reference\meter-anomaly-detection-skill\tutorial tutorial
+```
+
+> 数据集基于 **London Smart Meter Dataset**（Kaggle: jeanmidev/smart-meters-in-london）真实用电曲线，已内置于标准答案仓库，无需 Kaggle 账号或网络下载。
+
+---
+
+## Step 3：安装 Python 依赖
 
 ```bash
 pip install -r requirements.txt
 ```
 
-`requirements.txt` 包含：pandas、numpy、scikit-learn、pytest、pytest-cov
-
 ---
 
-## Step 3：生成数据集
+## Step 4：验证数据就绪
 
 ```bash
-python data/generate_data.py
+python -c "
+import pandas as pd
+df = pd.read_csv('data/meters_sample_10.csv')
+print(f'meters_sample_10: {df[\"meter_id\"].nunique()} 台, {len(df):,} 行')
+df2 = pd.read_csv('data/meters_diagnosis_100.csv')
+print(f'meters_diagnosis_100: {df2[\"meter_id\"].nunique()} 台, {len(df2):,} 行')
+print('数据就绪。')
+"
 ```
 
-**预期输出**（本地 London 模式）：
-
-```
-[London] 读取 data/london_raw/block_0.csv ...
-[London] sample_10: 10 台 × 30 天 = 14,396 行
-[London] diagnosis_50: 48 台 × 10 天 = 23,034 行
-[OK] meters_sample_10.csv
-[OK] meters_diagnosis_50.csv
-[OK] anomaly_labels.csv
-[MODE] London 真实数据
-[VALIDATE] 全部断言通过。
-```
-
-> 若无 `data/london_raw/block_0.csv`，自动降级为合成数据（CI 模式），输出格式略有不同。
-
-**验收检查**：`data/` 目录下出现三个 CSV 文件。
+**验收检查**：输出显示 `meters_sample_10: 10 台` 和 `meters_diagnosis_100: 100 台` 即就绪。
 
 ---
 
-## Step 4：验证测试套件
+## Step 5：验证 AI IDE 可用
 
-```bash
-pytest tests/ -q
-```
-
-**预期输出**：`30 passed` — 全部通过。
-
----
-
-## Step 5：启动 Claude Code
+**Claude Code 用户：**
 
 ```bash
 claude
 ```
 
-在提示符输入：
+在提示符输入 `/help`，确认命令响应正常。
 
-```
-你好，请确认你已加载了 .claude/skills/ 目录下的 Skill 文件。
-```
+**其他 IDE 用户（Trae / Codebuddy / Tongyi Lingma）：**
 
-**预期输出**：Claude Code 列出可用 Skill，包含 `meter-anomaly-detection`。
-
----
-
-## 恢复检查点机制
-
-工作坊每个单元（U2~U8）完成后都有一个 Git tag。  
-如果某个单元卡住，可以直接跳到下一单元：
-
-```bash
-git checkout checkpoint/U3   # 跳到 U3 起点（含 U2 全部产出）
-git checkout checkpoint/U4   # 跳到 U4 起点
-git checkout checkpoint/U5   # 跳到 U5 起点
-git checkout checkpoint/U6   # 跳到 U6 起点
-git checkout checkpoint/U7   # 跳到 U7 起点
-git checkout checkpoint/U8   # 跳到 U8 起点
-```
-
-每个 checkpoint 包含该单元所需的全部前置文件，无需手动补全。
+打开 IDE，新建对话，输入"你好"，确认 AI 响应正常。  
+同时打开 `tools/prompt-cards.md`，作为本次工作坊的提示词速查卡备用。
 
 ---
 
-## 目录结构速览
+## 保底复制机制
+
+每个单元（U2–U8）结束时，各 tutorial 文件末尾提供**保底步骤**。  
+未完成本单元任务的学员，执行保底步骤将标准答案文件复制到自己的 `my-skill/` 目录，即可与全班同步进入下一单元。
+
+所有保底步骤假设当前所在目录为 `workshop/my-skill/`，标准答案位于 `../reference/meter-anomaly-detection-skill/`。
+
+---
+
+## 目录结构速览（my-skill/ 最终状态）
 
 ```
-meter-anomaly-skill/
-├── data/               数据集（generate_data.py 生成）
-├── src/                Python 执行模块（cleaner / features / detector）
-├── tests/              pytest 测试套件
-├── .claude/skills/     Claude Code Skill 文件（讲师演示用）
-├── templates/          学员填充用空白模板
-└── tutorial/           本教程（U2~U8 操作手册）
+my-skill/
+├── requirements.txt
+├── data/
+│   ├── generate_data.py
+│   ├── meters_sample_10.csv        (Step 4 生成)
+│   ├── meters_diagnosis_100.csv    (Step 4 生成)
+│   └── anomaly_labels.csv          (Step 4 生成，课程结束后对照)
+├── .claude/skills/
+│   └── meter-anomaly-detection.md  (U4 创建)
+├── templates/
+│   └── skill-template.md           (Skill 空白模板)
+├── src/
+│   ├── __init__.py                  (U5 创建)
+│   ├── features.py                  (U5 实现)
+│   ├── cleaner.py                   (U6 实现)
+│   ├── detector.py                  (U6 保底复制)
+│   └── analyze.py                   (U6 保底复制)
+├── tests/                           (U8 创建)
+└── .github/workflows/ci.yml         (U8 创建)
 ```
 
 ---
@@ -128,4 +168,7 @@ A：先升级 pip：`pip install --upgrade pip`，然后重试。
 A：安装 CLI：`npm install -g @anthropic-ai/claude-code`
 
 **Q：数据生成报 AssertionError？**  
-A：删除已有文件重新生成：`python data/generate_data.py`
+A：删除已有 CSV 文件重新生成：`python data/generate_data.py`
+
+**Q：不在 `workshop/my-skill/` 目录中怎么办？**  
+A：保底步骤中的相对路径 `../reference/` 需改为你实际放置标准答案的绝对路径。

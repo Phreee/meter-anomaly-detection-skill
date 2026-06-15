@@ -24,8 +24,8 @@ AI 赋能研发效能工作坊——实操案例
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/<your-org>/meter-anomaly-skill.git
-cd meter-anomaly-skill
+git clone https://github.com/Phreee/meter-anomaly-detection-skill.git
+cd meter-anomaly-detection-skill
 
 # 2. 安装依赖（Python 3.11+）
 pip install -r requirements.txt
