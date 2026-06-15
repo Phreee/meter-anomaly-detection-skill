@@ -1,0 +1,26 @@
+name: Workshop CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate data
+        run: python data/generate_data.py
+
+      - name: Run tests with coverage
+        run: pytest tests/ -v --tb=short --cov=src --cov-report=term-missing
+
+      - name: Verify coverage >= 80%
+        run: pytest tests/ --cov=src --cov-fail-under=80 -q
