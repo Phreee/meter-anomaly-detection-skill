@@ -20,7 +20,4 @@ jobs:
         run: python data/generate_data.py
 
       - name: Run tests with coverage
-        run: pytest tests/ -v --tb=short --cov=src --cov-report=term-missing
-
-      - name: Verify coverage >= 80%
-        run: pytest tests/ --cov=src --cov-fail-under=80 -q
+        run: python -m pytest tests/ -v --tb=short --cov=src --cov-report=term-missing --cov-fail-under=80
