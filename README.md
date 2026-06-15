@@ -37,7 +37,7 @@ python data/generate_data.py
 pytest tests/ -q
 
 # 5. 运行完整检测管道
-python src/analyze.py data/meters_sample_10.csv
+python -m src.analyze data/meters_sample_10.csv
 ```
 
 ---
